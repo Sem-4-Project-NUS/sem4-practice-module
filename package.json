@@ -32,7 +32,7 @@
     "@langfuse/otel": "^5.10.2",
     "@opentelemetry/sdk-trace-node": "^2.10.0",
     "@supabase/supabase-js": "^2.109.0",
-    "ai": "^6.0.300",
+    "ai": "^7.0.148",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "glimm": "^0.3.1",
