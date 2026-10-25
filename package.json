@@ -49,7 +49,7 @@
     "shadow-plugin": "^2.1.1",
     "tailwind-merge": "^3.7.0",
     "ws": "^8.21.3",
-    "zod": "^4.4.3"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
