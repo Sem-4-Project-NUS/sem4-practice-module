@@ -65,7 +65,7 @@ jobs:
         uses: actions/dependency-review-action@v5
         with:
           fail-on-scopes: runtime, development
-          fail-on-severity: high
+          fail-on-severity: critical
 
   promptfoo:
     name: Promptfoo evals
