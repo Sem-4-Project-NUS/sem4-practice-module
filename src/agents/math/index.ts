@@ -1,5 +1,4 @@
 import { ToolLoopAgent, stepCountIs, wrapLanguageModel } from "ai";
-import { getModel } from "@/lib/llm";
 import { documentSearchTool, webSearchTool } from "../_shared/tools";
 import type { AgentRuntimeContext } from "../_shared/types";
 import { buildMathInstructions, MATH_PROMPT_VERSION } from "./prompts";
@@ -7,6 +6,8 @@ import { examFactsTool } from "./exam-facts";
 import { requiredFirstStepTool } from "./first-step";
 import { drawMathGraphTool, equationSolverTool } from "./tools";
 import { mathGuardrails } from "./guardrails";
+import { getMathModel } from "./model";
+import { isFinalStep, MATH_MAX_STEPS } from "./step-budget";
 
 /**
  * Output cap per step. The longest normal reply in the 2026-09-29 baseline was
@@ -16,10 +17,11 @@ import { mathGuardrails } from "./guardrails";
  */
 export const MATH_MAX_OUTPUT_TOKENS = 2000;
 
-export function createMathAgent(ctx: AgentRuntimeContext) {
+/** `model` is for tests only; the chat route passes just the context. */
+export function createMathAgent(ctx: AgentRuntimeContext, options: { model?: Parameters<typeof wrapLanguageModel>[0]["model"] } = {}) {
   return new ToolLoopAgent({
     id: "math",
-    model: wrapLanguageModel({ model: getModel(), middleware: mathGuardrails }),
+    model: wrapLanguageModel({ model: options.model ?? getMathModel(), middleware: mathGuardrails }),
     instructions: buildMathInstructions(ctx),
     tools: {
       equationSolver: equationSolverTool,
@@ -29,11 +31,12 @@ export function createMathAgent(ctx: AgentRuntimeContext) {
       webSearch: webSearchTool,
     },
     prepareStep: ({ stepNumber, messages }) => {
+      if (isFinalStep(stepNumber)) return { toolChoice: "none" };
       if (stepNumber !== 0) return {};
       const toolName = requiredFirstStepTool(messages);
       return toolName ? { toolChoice: { type: "tool", toolName } } : {};
     },
-    stopWhen: stepCountIs(8),
+    stopWhen: stepCountIs(MATH_MAX_STEPS),
     maxOutputTokens: MATH_MAX_OUTPUT_TOKENS,
     temperature: 0.2,
   });

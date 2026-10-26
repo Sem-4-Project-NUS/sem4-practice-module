@@ -25,7 +25,10 @@ You explain, show working, and verify numbers. If the student wants a quiz, tell
 | --- | --- |
 | `prompts.ts` | System prompt. Bump `MATH_PROMPT_VERSION` on every edit. |
 | `index.ts` | `createMathAgent` wiring: tools, guardrails, output cap. |
-| `first-step.ts` | Which tool the first step must use when the question makes it obvious. |
+| `step-budget.ts` | Reserves the last of the 8 steps for a written reply (tools off). Bounds model calls, not wall-clock time. |
+| `first-step.ts` | Which tool the first step must use when the question makes it obvious. A live examination forces no tool. |
+| `step-budget.ts` | Last step and any step after 40 s must write the answer, so a turn ends inside the 60-second hosting limit. |
+| `model.ts` | Optional dated model snapshot for this agent only (`MATH_MODEL_SNAPSHOT`). |
 | `tools.ts` | `equationSolver` and `drawMathGraph` (mathjs). |
 | `exam-facts.ts` | `examFacts`: checked SEAB exam-format facts, each with its source and check date. |
 | `guardrails.ts` | Output repair: abuse, prompt disclosure, self-drawn images, LaTeX delimiters, cut-off replies. |
@@ -49,6 +52,10 @@ Add new tools in their own file or `tools.ts`, register them in `index.ts`, and 
 - Other agents under `src/agents/physics`, `chemistry`, `testing`, `orchestration`
 - Quiz widgets (`src/components/quiz-widget.tsx`) unless Sritam asks; those belong to Testing + UI
 - Database / Supabase code (not in this slice)
+
+## Pinning the model
+
+`gpt-4o` is an alias the provider can move. To pin this agent, set `MATH_MODEL_SNAPSHOT` to a dated version of the alias in use, for example `MATH_MODEL_SNAPSHOT=gpt-4o-2024-08-06`, in `.env.local` and in the Vercel project settings. Unset, the agent uses the shared model exactly as before; it is not enabled in any environment yet. The pin applies only when the selected model is that alias, so evaluation runs on other models are unaffected. Unset or malformed values leave the agent unchanged. Re-run the Math suite after setting or changing it, and record the snapshot in the run note.
 
 ## Prompt rules
 
