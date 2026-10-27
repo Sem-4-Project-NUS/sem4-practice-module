@@ -2,6 +2,8 @@
 
 Multi-Agent Educational & Testing System for the NUS-ISS Practice Module (Team 5). A Singapore-aligned tutor that routes each student question to one of five agents: Orchestration, Math, Physics, Chemistry, or Testing.
 
+Repository: https://github.com/Sem-4-Project-NUS/sem4-practice-module
+
 ## Run it
 
 ```bash
