@@ -6,7 +6,7 @@ import {
   type JevChoiceAnswer,
   type JevResponse,
 } from "@/lib/jev";
-import { getModel } from "@/lib/llm";
+import { getAgentModel } from "@/lib/llm";
 import {
   AGENT_IDS,
   GRADE_LEVELS,
@@ -230,7 +230,7 @@ async function classifyWithLlm(options: {
   query: string;
 }): Promise<RoutingTurnResult> {
   const result = await generateText({
-    model: getModel(),
+    model: getAgentModel("orchestration"),
     system: buildRoutingInstructions(options.ctx),
     prompt: `Student grade band: ${options.ctx.profile.gradeLevel}\nLatest message:\n${options.query}`,
     output: Output.object({ schema: routingSchema }),

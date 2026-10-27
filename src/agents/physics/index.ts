@@ -1,5 +1,5 @@
 import { ToolLoopAgent, stepCountIs, wrapLanguageModel } from "ai";
-import { getModel } from "@/lib/llm";
+import { getAgentModel } from "@/lib/llm";
 import { documentSearchTool, webSearchTool } from "../_shared/tools";
 import type { AgentRuntimeContext } from "../_shared/types";
 import { buildPhysicsInstructions, needsPhysicsCourseClarification, PHYSICS_PROMPT_VERSION } from "./prompts";
@@ -56,7 +56,7 @@ export function requiredFirstStepTool(messages: Array<{ role?: string; content?:
 export function createPhysicsAgent(ctx: AgentRuntimeContext) {
   return new ToolLoopAgent({
     id: "physics",
-    model: wrapLanguageModel({ model: getModel(), middleware: physicsGuardrails }),
+    model: wrapLanguageModel({ model: getAgentModel("physics"), middleware: physicsGuardrails }),
     instructions: buildPhysicsInstructions(ctx),
     tools: {
       formulaLookup: formulaLookupTool,

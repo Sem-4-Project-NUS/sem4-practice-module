@@ -5,6 +5,17 @@ import { DEFAULT_EVAL_MODEL_ID, findEvalModel, resolveEvalModel } from "./models
 
 const modelStore = new AsyncLocalStorage<string>();
 
+/** Chat models. Unset falls back to OPENAI_MODEL, then gpt-4o. */
+export const AGENT_MODEL_ENV = {
+  orchestration: "ORCHESTRATION_MODEL",
+  math: "MATH_MODEL",
+  physics: "PHYSICS_MODEL",
+  chemistry: "CHEMISTRY_MODEL",
+  testing: "TESTING_MODEL",
+} as const;
+
+export type TutorAgentId = keyof typeof AGENT_MODEL_ENV;
+
 function readEnv(name: string) {
   const raw = process.env[name];
   if (!raw) return "";
@@ -28,6 +39,11 @@ export function runWithModel<T>(modelId: string, fn: () => T): T {
 
 export function getModelId() {
   return modelStore.getStore() ?? (readEnv("OPENAI_MODEL") || DEFAULT_EVAL_MODEL_ID);
+}
+
+/** Model for one tutor agent. An eval run's model overrides the agent variable. */
+export function getAgentModelId(agent: TutorAgentId) {
+  return modelStore.getStore() ?? (readEnv(AGENT_MODEL_ENV[agent]) || getModelId());
 }
 
 function googleApiKey() {
@@ -60,8 +76,7 @@ export function requireProviderKey(modelId: string) {
   return spec;
 }
 
-export function getModel() {
-  const id = getModelId();
+function languageModel(id: string) {
   const spec = findEvalModel(id);
   if (spec?.provider === "google") {
     requireProviderKey(spec.id);
@@ -69,4 +84,12 @@ export function getModel() {
   }
   requireProviderKey(spec?.id ?? "gpt-4o");
   return openai(id);
+}
+
+export function getModel() {
+  return languageModel(getModelId());
+}
+
+export function getAgentModel(agent: TutorAgentId) {
+  return languageModel(getAgentModelId(agent));
 }

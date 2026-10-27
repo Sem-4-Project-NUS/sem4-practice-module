@@ -19,7 +19,7 @@ import { getAccessToken, getAuthUser } from "@/lib/auth";
 import { sanitizeStudentMessage } from "@/lib/guardrails";
 import { retrieveChatContext } from "@/lib/embeddings";
 import { logAgentTurn } from "@/lib/langflow";
-import { getModelId } from "@/lib/llm";
+import { getAgentModelId } from "@/lib/llm";
 import { getRecentChats, previewText, rememberTurn } from "@/lib/memory";
 import { newLogId, recordRouting } from "@/lib/traces";
 import type { MetsUIMessage } from "@/lib/ui-types";
@@ -113,7 +113,7 @@ export async function POST(req: Request) {
     kind: "routing",
     input: text,
     output: JSON.stringify(routing),
-    model: getModelId(),
+    model: getAgentModelId("orchestration"),
     latencyMs: Date.now() - routedAt,
     routing,
     at: new Date().toISOString(),
@@ -201,7 +201,7 @@ export async function POST(req: Request) {
         kind: "generation",
         input: text,
         output: previewText(output, 4000),
-        model: getModelId(),
+        model: getAgentModelId(routing.agent),
         latencyMs: Date.now() - started,
         routing,
         at: new Date().toISOString(),

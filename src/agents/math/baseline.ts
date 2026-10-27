@@ -13,12 +13,12 @@
 //
 // Run from the repo root on a machine with OPENAI_API_KEY in .env.local:
 //   npx tsx --env-file=.env.local --tsconfig tsconfig.json src/agents/math/baseline.ts
-// Add --dry-run to list the cases without calling the API. Leave
-// MATH_MODEL_SNAPSHOT unset so all three conditions use the same model.
+// Add --dry-run to list the cases without calling the API. All three
+// conditions use the Math model (MATH_MODEL, else OPENAI_MODEL).
 
 import { writeFileSync, mkdirSync } from "node:fs";
 import { generateText } from "ai";
-import { getModel, getModelId } from "@/lib/llm";
+import { getMathModel, mathModelId } from "./model";
 import { buildComputedItems, buildExamItems, buildHoldoutItems } from "@/evals/catalog/math-generated";
 import type { EvalItem } from "@/evals/types";
 import type { AgentRuntimeContext } from "../_shared/types";
@@ -65,7 +65,7 @@ async function runCondition(condition: Condition, item: EvalItem) {
   } else {
     const system = condition === "B" ? buildMathInstructions(context(item)) : undefined;
     const result = await generateText({
-      model: getModel(),
+      model: getMathModel(),
       system,
       prompt: item.prompt,
       temperature: 0.2,
@@ -125,11 +125,7 @@ function choose(n: number, k: number) {
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 
 async function main() {
-  console.log(`${items.length} cases, selected model ${getModelId()}`);
-  if (process.env.MATH_MODEL_SNAPSHOT) {
-    console.log("MATH_MODEL_SNAPSHOT is set: unset it so all three conditions use the same model.");
-    process.exit(1);
-  }
+  console.log(`${items.length} cases, selected model ${mathModelId()}`);
   if (dryRun) {
     for (const item of items) console.log(`${layerOf(item.id).padEnd(20)} ${item.id}  expects ${JSON.stringify(item.scaffold.mustInclude)}`);
     return;

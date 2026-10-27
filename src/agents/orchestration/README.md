@@ -44,6 +44,20 @@ You may also change `src/app/api/chat/route.ts` because that is where routing is
 
 Kinematics word problems are **physics**, not math, unless the student only asks for the algebra. "Give me MCQs" / "test me" / "flashcards" is **testing**, even if a subject is named.
 
+## Models
+
+Each tutor agent reads its own model id. Set these in `.env.local` or the host's environment variables:
+
+| Agent | Variable |
+| --- | --- |
+| Orchestration (router and concierge) | `ORCHESTRATION_MODEL` |
+| Math | `MATH_MODEL` |
+| Physics | `PHYSICS_MODEL` |
+| Chemistry | `CHEMISTRY_MODEL` |
+| Testing | `TESTING_MODEL` |
+
+Unset, that agent uses `OPENAI_MODEL`, then `gpt-4o`. An evaluation run still uses the model chosen for that suite. Guardrail keeps `OPENAI_MODEL`.
+
 ## How to test
 
 1. `npm run dev` with `OPENAI_API_KEY` set. Optional: `TYPESAFE_API_KEY` for Jev-first routing.

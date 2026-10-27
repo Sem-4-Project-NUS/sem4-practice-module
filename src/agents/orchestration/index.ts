@@ -1,5 +1,5 @@
 import { ToolLoopAgent, stepCountIs } from "ai";
-import { getModel } from "@/lib/llm";
+import { getAgentModel } from "@/lib/llm";
 import type { AgentRuntimeContext } from "../_shared/types";
 import {
   buildOrchestrationInstructions,
@@ -9,7 +9,7 @@ import {
 export function createOrchestrationAgent(ctx: AgentRuntimeContext) {
   return new ToolLoopAgent({
     id: "orchestration",
-    model: getModel(),
+    model: getAgentModel("orchestration"),
     instructions: buildOrchestrationInstructions(ctx),
     stopWhen: stepCountIs(4),
     temperature: 0.4,

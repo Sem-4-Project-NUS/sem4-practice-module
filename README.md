@@ -86,7 +86,7 @@ docker compose -f langflow/docker-compose.yml up
 
 - Next.js App Router + TypeScript
 - Vercel AI SDK (`ToolLoopAgent`, `useChat`)
-- OpenAI (tutor default via `OPENAI_MODEL`, `gpt-4o`) and Gemini (`GOOGLE_GENERATIVE_AI_API_KEY`) for the eval Scores picker
+- OpenAI (per agent via `ORCHESTRATION_MODEL`, `MATH_MODEL`, `PHYSICS_MODEL`, `CHEMISTRY_MODEL`, `TESTING_MODEL`, falling back to `OPENAI_MODEL` / `gpt-4o`) and Gemini (`GOOGLE_GENERATIVE_AI_API_KEY`) for the eval Scores picker
 - Supabase Auth + Postgres (server-only `SUPABASE_URL` with a service role, secret, or anon/publishable key)
 - Same-project pgvector for the student's own chat chunks; syllabus RAG stays local markdown
 - Langflow for prompt traces when configured
