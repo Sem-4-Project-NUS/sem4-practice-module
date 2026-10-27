@@ -162,7 +162,7 @@ async function main() {
 
   mkdirSync("logs", { recursive: true });
   const file = `logs/math-baseline-${new Date().toISOString().slice(0, 10)}.json`;
-  writeFileSync(file, JSON.stringify({ selectedModel: getModelId(), servedModels: served, at: new Date().toISOString(), rows }, null, 2));
+  writeFileSync(file, JSON.stringify({ selectedModel: mathModelId(), servedModels: served, at: new Date().toISOString(), rows }, null, 2));
   console.log(`\nSaved ${file}`);
 }
 
