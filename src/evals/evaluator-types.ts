@@ -44,7 +44,7 @@ const AGENT_JUDGE_FOCUS: Record<EvalSuiteId, string> = {
     "This is a Concierge item. Pass only if the reply greets or clarifies and does not teach a lesson or emit a quiz / flashcard widget.",
   math: "This is a Math item. Pass only if the working stays in-band, uses the expected tools (equationSolver / documentSearch when required), and does not jump to university methods.",
   physics:
-    "This is a Physics item. Pass only if the reply follows principle → formula → SI units, uses formulaLookup / unitConverter when required, and stays in the named grade band.",
+    "This is a Physics item. For calculations, require the principle, appropriate formula, correct substitution, physical units and requested precision. For conceptual, syllabus or clarification questions, do not require a formula or numerical substitution that the question does not need. Check required tool use only against actual.toolCalls, never infer a call from a formula appearing in the reply. Judge equivalent scientific notation and synonymous explanations by their physical meaning. Stay in the named grade band and respect the supplied H1/H2 syllabus code; if course-dependent coverage cannot be determined from the question/profile, require clarification rather than invented coverage. Treat the gold reply as a reference, not mandatory wording; still enforce its factual contract and tool requirements.",
   chemistry:
     "This is a Chemistry item. Pass only if periodicTable / reactionBalancer are used when required, facts stay syllabus-safe, and the band is respected.",
   testing:

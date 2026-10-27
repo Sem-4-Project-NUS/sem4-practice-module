@@ -1,18 +1,21 @@
 import { tool } from "ai";
 import { z } from "zod";
+import { evaluate } from "mathjs";
 
-const FORMULAS: Array<{ id: string; name: string; expression: string; notes: string }> = [
-  { id: "f-ma", name: "Newton's second law", expression: "F = ma", notes: "F in N, m in kg, a in m/s^2" },
-  { id: "suvat-v", name: "SUVAT velocity", expression: "v = u + at", notes: "constant acceleration" },
-  { id: "suvat-s", name: "SUVAT displacement", expression: "s = ut + 1/2 at^2", notes: "constant acceleration" },
+const FORMULAS: Array<{ id: string; name: string; expression: string; notes: string; aliases?: string[] }> = [
+  { id: "f-ma", name: "Newton's second law", expression: "F = ma", notes: "F in N, m in kg, a in m/s^2", aliases: ["force", "resultant force"] },
+  { id: "suvat-v", name: "SUVAT velocity", expression: "v = u + at", notes: "constant acceleration", aliases: ["final speed", "final velocity"] },
+  { id: "suvat-s", name: "SUVAT displacement", expression: "s = ut + 1/2 at^2", notes: "constant acceleration", aliases: ["displacement"] },
   { id: "ke", name: "Kinetic energy", expression: "E_k = 1/2 mv^2", notes: "joules" },
   { id: "gpe", name: "Gravitational potential energy", expression: "E_p = mgh", notes: "near Earth, g ≈ 9.81 m/s^2" },
   { id: "ohm", name: "Ohm's law", expression: "V = IR", notes: "V in V, I in A, R in Ω" },
   { id: "power-elec", name: "Electrical power", expression: "P = IV = I^2 R = V^2 / R", notes: "watts" },
-  { id: "wave", name: "Wave equation", expression: "v = f λ", notes: "f in Hz, λ in m" },
+  { id: "wave", name: "Wave equation", expression: "v = f λ", notes: "f in Hz, λ in m", aliases: ["waves", "wave speed", "frequency and wavelength"] },
   { id: "density", name: "Density", expression: "ρ = m / V", notes: "kg/m^3" },
   { id: "pressure", name: "Pressure", expression: "p = F / A", notes: "pascals" },
-  { id: "lens", name: "Thin lens", expression: "1/f = 1/u + 1/v", notes: "real-is-positive convention at O-Level" },
+  { id: "capacitance", name: "Capacitance", expression: "C = Q / V", notes: "C in F, Q in C, V in V; check the student's course using documentSearch for coverage" },
+  { id: "ideal-gas", name: "Ideal-gas equation of state", expression: "pV = nRT", notes: "p in Pa, V in m^3, n in mol, T in K; R = 8.31 J/(mol K) when supplied; p = nRT/V", aliases: ["ideal gas", "gas law"] },
+  { id: "lens", name: "Thin lens", expression: "1/f = 1/u + 1/v", notes: "real-is-positive convention when specified; this equation/sign convention is extension beyond the listed 6091 lens outcomes, not syllabus evidence" },
 ];
 
 const TO_SI: Record<string, { si: string; factor: number }> = {
@@ -156,7 +159,8 @@ export const formulaLookupTool = tool({
       (row) =>
         row.id.includes(needle) ||
         row.name.toLowerCase().includes(needle) ||
-        row.expression.toLowerCase().includes(needle),
+        row.expression.toLowerCase().includes(needle) ||
+        (row.aliases ?? []).some((alias) => alias.includes(needle)),
     );
     // 3. Consistency & Reliability: an unknown topic must not return unrelated formulas.
     return needle && hits.length
@@ -187,6 +191,31 @@ export const unitConverterTool = tool({
       si,
       output: { value: Number(converted.toPrecision(8)), to },
     };
+  },
+});
+
+const arithmeticInputSchema = z.object({
+  expression: z.string().trim().min(1).max(200)
+    .regex(/^[0-9.eE+\-*/^()\s]+$/, "Use numbers and arithmetic operators only."),
+});
+
+export const calculatePhysicsTool = tool({
+  description: "Verify a Physics numerical substitution after formula lookup. Supply numbers with +, -, *, /, ^ and parentheses; use e notation for powers of ten. No variables, units, functions or executable code. Convert quantities to compatible units first; round only the final answer.",
+  inputSchema: arithmeticInputSchema,
+  execute: async (input) => {
+    try {
+      const { expression } = arithmeticInputSchema.parse(input);
+      // The character whitelist excludes assignments, functions and access to
+      // objects. Standalone symbols (including Euler's e) are not substitutions.
+      if (/(^|[^0-9.])[eE]/.test(expression)) return { ok: false, error: "Use e only inside a numeric exponent such as 1e-3." };
+      const value: unknown = evaluate(expression);
+      if (typeof value !== "number" || !Number.isFinite(value)) {
+        return { ok: false, error: "The substitution must produce a finite real number." };
+      }
+      return { ok: true, expression, value };
+    } catch {
+      return { ok: false, error: "Invalid numerical substitution. Use numbers and arithmetic operators only." };
+    }
   },
 });
 

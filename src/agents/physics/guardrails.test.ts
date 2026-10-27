@@ -4,7 +4,7 @@ import type { LanguageModelV3StreamPart } from "@ai-sdk/provider";
 import { wrapLanguageModel } from "ai";
 import { MockLanguageModelV3 } from "ai/test";
 import { normalisePhysicsReply, physicsGuardrails } from "./guardrails";
-import { buildPhysicsInstructions } from "./prompts";
+import { buildPhysicsInstructions, needsPhysicsCourseClarification } from "./prompts";
 import { DEFAULT_PROFILE } from "../_shared/types";
 import { asPhysicsDiagramOutput } from "./diagram-types";
 import { drawPhysicsDiagramTool, formulaLookupTool } from "./tools";
@@ -55,6 +55,38 @@ test("mixed diagram requests ask for clarification instead of forcing a free-bod
     requiredFirstStepTool([{ role: "user", content: "Plot a velocity-time graph." }]),
     "drawPhysicsDiagram",
   );
+});
+
+test("calculation units and graph descriptions do not steal the required formula step", () => {
+  const choose = (content: string) => requiredFirstStepTool([{ role: "user", content }]);
+  assert.equal(choose("A car starts from rest and accelerates at 2 m/s^2 for 5 s. Find its final speed."), "formulaLookup");
+  assert.equal(choose("A force-time graph is triangular, with base 0.20 s and height 40 N. Find the impulse."), "formulaLookup");
+  assert.equal(choose("Two lengths are (2.00 ± 0.02) m and (3.00 ± 0.03) m. Add them."), "formulaLookup");
+  assert.equal(choose("Heat 0.20 kg of water through 5.0 K. Use Q = mcΔT."), "formulaLookup");
+  assert.equal(choose("Convert 72 km/h to m/s and show working."), "unitConverter");
+  assert.equal(choose("Convert 310.15 K to degrees Celsius."), "unitConverter");
+  assert.equal(choose("Does the 6091 syllabus require the thin-lens equation?"), "documentSearch");
+  assert.equal(choose("Does 2026 O-Level Physics 6091 explicitly require the thin-lens equation?"), "documentSearch");
+  assert.equal(choose("Are capacitance and RC discharging included in H2 Physics 9478?"), "documentSearch");
+  assert.equal(choose("An observation lasts 2.5 minutes. How many seconds is that?"), "unitConverter");
+  assert.equal(choose("How are speed, frequency and wavelength related?"), "formulaLookup");
+});
+
+test("unknown JC course needs clarification after retrieval, known course and O-Level comparisons do not", () => {
+  const ctx = { sessionId: "course-test", profile: { ...DEFAULT_PROFILE, gradeLevel: "jc" as const, notes: [] }, recentChats: [] };
+  const message = (content: string) => [{ role: "user", content }];
+  assert.equal(needsPhysicsCourseClarification(ctx, message("I am in JC. Is quantum physics in my syllabus?")), true);
+  assert.equal(needsPhysicsCourseClarification(ctx, message("Is quantum physics in H1 8867?")), false);
+  assert.equal(needsPhysicsCourseClarification(ctx, message("Does O-Level 6091 include quantum physics in the syllabus?")), false);
+  assert.equal(needsPhysicsCourseClarification({ ...ctx, profile: { ...ctx.profile, notes: ["Takes H2 Physics 9478."] } }, message("Is quantum physics in my syllabus?")), false);
+  assert.equal(needsPhysicsCourseClarification(ctx, message("Explain quantum physics.")), false);
+});
+
+test("course identity uses student history, not an assistant's earlier H1/H2 comparison", () => {
+  const ctx = { sessionId: "course-test", profile: { ...DEFAULT_PROFILE, gradeLevel: "jc" as const, notes: [] }, recentChats: [{ role: "assistant" as const, text: "H1 8867 excludes quantum; H2 9478 includes it.", at: "2026-10-04" }] };
+  const messages = [{ role: "user", content: "Is quantum physics in my syllabus?" }];
+  assert.equal(needsPhysicsCourseClarification(ctx, messages), true);
+  assert.equal(needsPhysicsCourseClarification({ ...ctx, recentChats: [{ role: "user", text: "I take H2 Physics 9478.", at: "2026-10-04" }] }, messages), false);
 });
 
 const usage = {
@@ -126,6 +158,15 @@ test("formula lookup returns no unrelated fallback and handles surrounding white
   const known = await formulaLookupTool.execute!({ topic: " ohm " }, options);
   assert.ok("hits" in known);
   assert.equal(known.hits[0]?.id, "ohm");
+  const force = await formulaLookupTool.execute!({ topic: "force" }, options);
+  assert.ok("hits" in force);
+  assert.equal(force.hits[0]?.id, "f-ma");
+  const waves = await formulaLookupTool.execute!({ topic: "waves" }, options);
+  assert.ok("hits" in waves);
+  assert.equal(waves.hits[0]?.id, "wave");
+  const unsupported = await formulaLookupTool.execute!({ topic: "centripetal force" }, options);
+  assert.ok("hits" in unsupported);
+  assert.deepEqual(unsupported.hits, []);
 });
 
 test("lens diagram derives a real inverted image from validated physical values", async () => {

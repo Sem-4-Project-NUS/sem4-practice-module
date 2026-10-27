@@ -131,16 +131,17 @@ function addMotionGraph(board: JXG.Board, spec: MotionGraphDiagramSpec) {
     });
   }
   if (spec.seriesLabel) {
-    const [left, top] = board.getBoundingBox();
-    board.create("text", [left + 0.35, top - 0.55, spec.seriesLabel], {
+    const [left, top, right, bottom] = board.getBoundingBox();
+    board.create("text", [right - (right - left) * 0.05, top - (top - bottom) * 0.08, spec.seriesLabel], {
       ...TEXT,
       color: COLOURS.blue,
       fontSize: 13,
+      anchorX: "right",
     });
   }
 }
 
-function addOpticalMark(board: JXG.Board, x: number, text: string) {
+function addOpticalMark(board: JXG.Board, x: number, text: string, labelOffset: number) {
   board.create("point", [x, 0], {
     ...FIXED,
     name: "",
@@ -148,7 +149,7 @@ function addOpticalMark(board: JXG.Board, x: number, text: string) {
     strokeColor: COLOURS.ink,
     fillColor: COLOURS.ink,
   });
-  board.create("text", [x - 0.15, -0.45, text], TEXT);
+  board.create("text", [x, -labelOffset, text], { ...TEXT, anchorX: "middle", anchorY: "top" });
 }
 
 function addConvergingLensDiagram(board: JXG.Board, spec: ConvergingLensDiagramSpec) {
@@ -178,10 +179,11 @@ function addConvergingLensDiagram(board: JXG.Board, spec: ConvergingLensDiagramS
     },
   );
 
-  addOpticalMark(board, -2 * spec.focalLength, "2F");
-  addOpticalMark(board, -spec.focalLength, "F");
-  addOpticalMark(board, spec.focalLength, "F");
-  addOpticalMark(board, 2 * spec.focalLength, "2F");
+  const labelOffset = Math.max(spec.objectDistance, imageDistance, 2 * spec.focalLength) * 0.045;
+  addOpticalMark(board, -2 * spec.focalLength, "2F", labelOffset);
+  addOpticalMark(board, -spec.focalLength, "F", labelOffset);
+  addOpticalMark(board, spec.focalLength, "F", labelOffset);
+  addOpticalMark(board, 2 * spec.focalLength, "2F", labelOffset);
 
   const objectTop: [number, number] = [-spec.objectDistance, spec.objectHeight];
   const imageTop: [number, number] = [imageDistance, imageHeight];
