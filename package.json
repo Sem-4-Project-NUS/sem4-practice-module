@@ -23,9 +23,9 @@
     "promptfoo:view": "promptfoo view"
   },
   "dependencies": {
-    "@ai-sdk/google": "^3.0.130",
-    "@ai-sdk/openai": "^3.0.124",
-    "@ai-sdk/react": "^3.0.303",
+    "@ai-sdk/google": "^3.0.138",
+    "@ai-sdk/openai": "^3.0.131",
+    "@ai-sdk/react": "^3.0.318",
     "@hugeicons/core-free-icons": "^4.3.5",
     "@hugeicons/react": "^1.1.10",
     "@langfuse/client": "^5.10.2",
