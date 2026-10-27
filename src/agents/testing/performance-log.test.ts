@@ -9,9 +9,9 @@ import {
 
 test("performance log filenames retain safe slugs and anonymous fallback", async () => {
   const named = await readRecentAssessmentPerformance("../Quiz Session_01/");
-  assert.match(named.markdownPath, /\/quiz-session-01\.md$/);
+  assert.match(named.markdownPath, /[\/\\]quiz-session-01\.md$/);
   const anonymous = await readRecentAssessmentPerformance("../");
-  assert.match(anonymous.markdownPath, /\/anon\.md$/);
+  assert.match(anonymous.markdownPath, /[\/\\]anon\.md$/);
 });
 
 test("staged assessment performance entries can be consumed once", () => {
