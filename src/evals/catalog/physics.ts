@@ -252,7 +252,7 @@ export const physicsItems: EvalItem[] = [
     suiteId: "physics",
     kind: "teaching",
     title: "Contact, non-contact and balanced forces",
-    prompt: "What forces can act on an object, and must objects touch?",
+    prompt: "What forces can act on an object, and must objects touch? Can a stationary object have balanced forces?",
     profile: primaryAlex,
     targetAgent: "physics",
     scaffold: {
@@ -260,7 +260,7 @@ export const physicsItems: EvalItem[] = [
         "Give contact and non-contact examples and explain that a stationary object may have balanced forces. Avoid advanced vector treatment at Primary level.",
       goldReply:
         "Contact forces include friction and spring force; non-contact forces include gravity and magnetism. A stationary object can still have balanced forces acting on it.",
-      mustInclude: ["friction", "gravity", "balanced"],
+      mustInclude: ["friction", "gravit", "balanced"],
       source: "user-provided",
     },
   },

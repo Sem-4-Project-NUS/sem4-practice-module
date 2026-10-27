@@ -1,5 +1,6 @@
 import type { EvalCheck, EvalItem, EvalItemResult, GoldRouting } from "./types";
 import { chemistryPhraseIncludes } from "./chemistry-notation";
+import { physicsPhrasePresent } from "@/agents/physics/eval-phrases";
 
 function includesPhrase(text: string, phrase: string) {
   return text.toLowerCase().includes(phrase.toLowerCase());
@@ -64,7 +65,13 @@ export function scoreAgainstScaffold(options: {
   }
 
   const matcher = item.suiteId === "chemistry" ? chemistryPhraseIncludes : includesPhrase;
-  const must = phraseScore(combined, item.scaffold.mustInclude ?? [], "must", false, matcher);
+  const must = phraseScore(
+    combined,
+    item.scaffold.mustInclude ?? [],
+    "must",
+    false,
+    item.suiteId === "physics" ? physicsPhrasePresent : matcher,
+  );
   const mustNot = phraseScore(
     combined,
     item.scaffold.mustNotInclude ?? [],

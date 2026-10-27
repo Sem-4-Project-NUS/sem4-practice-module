@@ -3,6 +3,7 @@ import { routeStudentTurn } from "@/agents/orchestration/router";
 import { DEFAULT_PROFILE, type AgentRuntimeContext } from "@/agents/_shared/types";
 import { sanitizeStudentMessage } from "@/lib/guardrails";
 import { getModelId, runWithModel } from "@/lib/llm";
+import { physicsEvalReply } from "@/agents/physics/eval-output";
 import { EVAL_SUITES } from "./catalog";
 import { getEvalSuite } from "./live-catalog";
 import { estimateCostUsd, percentile } from "./pricing";
@@ -122,7 +123,9 @@ async function runAgentItem(item: EvalItem): Promise<Omit<EvalItemResult, "accur
     kind: item.kind,
     prompt: item.prompt,
     goldReply: item.scaffold.goldReply,
-    actualText: result.text ?? "",
+    // Physics writes working before its arithmetic tool, then the answer after
+    // it. Students see both streamed steps; evaluate the same complete prose.
+    actualText: item.suiteId === "physics" ? physicsEvalReply(result) : result.text ?? "",
     toolCalls: evaluationToolCalls,
     latencyMs: Date.now() - started,
     inputTokens: usage.inputTokens,
