@@ -3,7 +3,7 @@ import type { LanguageModelMiddleware } from "ai";
 import type { AgentRuntimeContext, Subject } from "../_shared/types";
 import type { TestingMode, VisualFormat } from "./assessment-planner";
 import { estimateCostUsd } from "@/evals/pricing";
-import { getModelId } from "@/lib/llm";
+import { getAgentModelId } from "@/lib/llm";
 import { stripLineEndWhitespace } from "@/lib/reply-text";
 import {
   appendAssessmentPerformanceEntry,
@@ -193,7 +193,7 @@ async function logAssessmentTelemetry(options: {
     inputTokens: options.inputTokens,
     outputTokens: options.outputTokens,
     costUsd: estimateCostUsd({
-      model: getModelId(),
+      model: getAgentModelId("testing"),
       inputTokens: options.inputTokens,
       outputTokens: options.outputTokens,
     }),

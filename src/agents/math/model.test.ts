@@ -23,21 +23,28 @@ function withEnv(values: Record<string, string | undefined>, fn: () => void) {
 const key = "test-key-not-used-for-network-calls";
 
 test("without a snapshot the agent uses the shared model choice unchanged", () => {
-  withEnv({ OPENAI_API_KEY: key, OPENAI_MODEL: undefined, MATH_MODEL_SNAPSHOT: undefined }, () => {
+  withEnv({ OPENAI_API_KEY: key, OPENAI_MODEL: undefined, MATH_MODEL: undefined, MATH_MODEL_SNAPSHOT: undefined }, () => {
     assert.equal(mathModelId(), "gpt-4o");
     assert.equal(getMathModel().modelId, "gpt-4o");
   });
 });
 
+test("MATH_MODEL overrides the shared model", () => {
+  withEnv({ OPENAI_API_KEY: key, OPENAI_MODEL: "gpt-4o", MATH_MODEL: "gpt-4.1", MATH_MODEL_SNAPSHOT: undefined }, () => {
+    assert.equal(mathModelId(), "gpt-4.1");
+    assert.equal(getMathModel().modelId, "gpt-4.1");
+  });
+});
+
 test("a dated snapshot of the selected alias is pinned", () => {
-  withEnv({ OPENAI_API_KEY: key, OPENAI_MODEL: undefined, MATH_MODEL_SNAPSHOT: "gpt-4o-2024-08-06" }, () => {
+  withEnv({ OPENAI_API_KEY: key, OPENAI_MODEL: undefined, MATH_MODEL: "gpt-4o", MATH_MODEL_SNAPSHOT: "gpt-4o-2024-08-06" }, () => {
     assert.equal(mathModelId(), "gpt-4o-2024-08-06");
     assert.equal(getMathModel().modelId, "gpt-4o-2024-08-06");
   });
 });
 
 test("the pin never overrides an evaluation run on another model", () => {
-  withEnv({ OPENAI_API_KEY: key, MATH_MODEL_SNAPSHOT: "gpt-4o-2024-08-06" }, () => {
+  withEnv({ OPENAI_API_KEY: key, MATH_MODEL: "gpt-4o", MATH_MODEL_SNAPSHOT: "gpt-4o-2024-08-06" }, () => {
     runWithModel("gpt-4o-mini", () => assert.equal(mathModelId(), "gpt-4o-mini"));
     runWithModel("gemini-2.5-flash", () => assert.equal(mathModelId(), "gemini-2.5-flash"));
   });
@@ -45,14 +52,14 @@ test("the pin never overrides an evaluation run on another model", () => {
 
 test("a malformed snapshot is ignored rather than sent to the provider", () => {
   for (const value of ["gpt-4o-latest", "gpt-4o-mini-2024-07-18", "2024-08-06", " "]) {
-    withEnv({ OPENAI_API_KEY: key, OPENAI_MODEL: undefined, MATH_MODEL_SNAPSHOT: value }, () => {
+    withEnv({ OPENAI_API_KEY: key, OPENAI_MODEL: undefined, MATH_MODEL: undefined, MATH_MODEL_SNAPSHOT: value }, () => {
       assert.equal(mathModelId(), "gpt-4o", value);
     });
   }
 });
 
 test("the agent assembles with its tools, limits and pinned model", () => {
-  withEnv({ OPENAI_API_KEY: key, OPENAI_MODEL: undefined, MATH_MODEL_SNAPSHOT: "gpt-4o-2024-08-06" }, () => {
+  withEnv({ OPENAI_API_KEY: key, OPENAI_MODEL: undefined, MATH_MODEL: undefined, MATH_MODEL_SNAPSHOT: "gpt-4o-2024-08-06" }, () => {
     const agent = createMathAgent({
       sessionId: "math-assembly-test",
       profile: { name: "Alex", gradeLevel: "secondary", diagnostic: {}, notes: [] },

@@ -28,7 +28,7 @@ You explain, show working, and verify numbers. If the student wants a quiz, tell
 | `step-budget.ts` | Reserves the last of the 8 steps for a written reply (tools off). Bounds model calls, not wall-clock time. |
 | `first-step.ts` | Which tool the first step must use when the question makes it obvious. A live examination forces no tool. |
 | `step-budget.ts` | Last step and any step after 40 s must write the answer, so a turn ends inside the 60-second hosting limit. |
-| `model.ts` | Optional dated model snapshot for this agent only (`MATH_MODEL_SNAPSHOT`). |
+| `model.ts` | This agent's model (`MATH_MODEL`) and an optional dated snapshot (`MATH_MODEL_SNAPSHOT`). |
 | `tools.ts` | `equationSolver` and `drawMathGraph` (mathjs). |
 | `exam-facts.ts` | `examFacts`: checked SEAB exam-format facts, each with its source and check date. |
 | `guardrails.ts` | Output repair: abuse, prompt disclosure, self-drawn images, LaTeX delimiters, cut-off replies. |
@@ -55,7 +55,7 @@ Add new tools in their own file or `tools.ts`, register them in `index.ts`, and 
 
 ## Pinning the model
 
-`gpt-4o` is an alias the provider can move. To pin this agent, set `MATH_MODEL_SNAPSHOT` to a dated version of the alias in use, for example `MATH_MODEL_SNAPSHOT=gpt-4o-2024-08-06`, in `.env.local` and in the Vercel project settings. Unset, the agent uses the shared model exactly as before; it is not enabled in any environment yet. The pin applies only when the selected model is that alias, so evaluation runs on other models are unaffected. Unset or malformed values leave the agent unchanged. Re-run the Math suite after setting or changing it, and record the snapshot in the run note.
+Set `MATH_MODEL` to the model id for this agent. Unset, it uses `OPENAI_MODEL`, then `gpt-4o`. `gpt-4o` is an alias the provider can move. To pin a dated snapshot, set `MATH_MODEL_SNAPSHOT` to a dated version of the selected alias, for example `MATH_MODEL=gpt-4o` and `MATH_MODEL_SNAPSHOT=gpt-4o-2024-08-06`, in `.env.local` and in the Vercel project settings. The pin applies only when the selected model is that alias, so evaluation runs on other models are unaffected. Unset or malformed snapshot values leave the selected model unchanged. Re-run the Math suite after setting or changing it, and record the snapshot in the run note.
 
 ## Prompt rules
 

@@ -1,5 +1,5 @@
 import { ToolLoopAgent, stepCountIs, wrapLanguageModel } from "ai";
-import { getModel } from "@/lib/llm";
+import { getAgentModel } from "@/lib/llm";
 import { documentSearchTool } from "../_shared/tools";
 import type { AgentRuntimeContext } from "../_shared/types";
 import { createTestingGuardrails } from "./guardrails";
@@ -42,7 +42,7 @@ function requiredFirstStepTool(
 export function createTestingAgent(ctx: AgentRuntimeContext) {
   return new ToolLoopAgent({
     id: "testing",
-    model: wrapLanguageModel({ model: getModel(), middleware: createTestingGuardrails(ctx) }),
+    model: wrapLanguageModel({ model: getAgentModel("testing"), middleware: createTestingGuardrails(ctx) }),
     instructions: buildTestingInstructions(ctx),
     tools: {
       planAssessment: planAssessmentTool,
