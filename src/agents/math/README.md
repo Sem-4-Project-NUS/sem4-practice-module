@@ -3,7 +3,8 @@
 **Owner:** Gu Haixiang  
 **Folder:** `src/agents/math/`  
 **Syllabus corpus:** `data/syllabus/math.md`  
-**Results:** [runs/](./runs/) records every evaluation run, from the 29 September baseline onwards.
+**Results:** [runs/](./runs/) records every evaluation run, from the 29 September baseline onwards.  
+**Design record:** [DESIGN.md](./DESIGN.md) keeps the requirements, decisions, quality gates and review findings.
 
 ## Scope
 
@@ -32,6 +33,7 @@ The agent is self-contained in this folder and does not import other specialist 
 | `graph-types.ts`, `math-graph-widget.tsx` | Client rendering of `drawMathGraph` output (JSXGraph). |
 | `baseline.ts` | Ablation script: plain model, prompt without tools, and the full agent on the code-scored cases. |
 | `*.test.ts` | Unit tests for the modules above. |
+| `DESIGN.md` | Design record: scope, requirements, decisions and alternatives, quality gates, review findings. |
 | `runs/` | Evaluation run records. |
 | `references/` | Register of the official MOE and SEAB documents behind the syllabus and examination facts. |
 | `src/evals/catalog/math.ts`, `math-generated.ts` | Hand-written and generated evaluation cases. |
