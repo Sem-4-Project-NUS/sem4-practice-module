@@ -4,8 +4,6 @@
 **Folder:** `src/agents/physics/`  
 **Syllabus corpus:** `data/syllabus/physics.md`
 
-Tell a coding agent: *You are working on the METS Physics Agent only. Read this file fully. Do not edit other specialist folders. Do not build quizzes here.*
-
 ## Job
 
 Teach Singapore physics at the student's band:
