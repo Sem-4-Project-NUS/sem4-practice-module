@@ -1,14 +1,14 @@
-// SCAFFOLD STATUS — not a trusted baseline.
-// Review of 12 September 2026 (src/agents/math/archive/REVIEW-2026-09-12.md) established that a
-// `requiredTools` name check cannot show which mode ran, with what inputs, or whether the
-// calculation actually succeeded, and that literal `mustInclude` strings can reject
-// mathematically correct LaTeX. Treat results as development signal only until richer tool
-// evidence and a mathematics-aware scorer are agreed with the shared evaluation owner.
+// Mathematics evaluation cases: regression, security and the generated layers.
+//
+// Each case is scored twice, and passes only when both pass: a code check (required
+// phrases and tool names) and a model judge (mathematical correctness, explanation and
+// grade-band fit). A tool-name check shows that a tool ran, not which mode ran or whether
+// the calculation succeeded, so correctness rests on the answer check and the judge.
 //
 // Gold answers were checked against the SEAB and MOE documents on 29 September 2026
-// (src/agents/math/runs/2026-09-29-gold-review.md). Where a correct reply can be written
-// several ways (1/2 or \frac{1}{2}), the literal check is dropped and the judge decides,
-// until the shared scorer can test mathematical equivalence.
+// (see src/agents/math/runs/2026-09-29-run4.md and DESIGN.md). Where a correct reply can be
+// written several ways (1/2 or \frac{1}{2}), the literal check is dropped and the judge
+// decides, because the shared scorer does not yet test mathematical equivalence.
 //
 // Eval v2 (5 October 2026) adds generated cases from math-generated.ts, whose answers are
 // computed by code. Ids starting math-holdout- are held out: never tune against them.
@@ -158,7 +158,7 @@ export const mathItems: EvalItem[] = [
       contract: "Even faces 2,4,6 so 3/6 = 1/2.",
       goldReply: "Even outcomes are 2, 4 and 6. Probability = 3/6 = 1/2.",
       // NOTE: a literal check rejects valid LaTeX such as \\frac{1}{2}. Needs a
-      // mathematics-aware scorer; see src/agents/math/archive/REVIEW-2026-09-12.md.
+      // mathematics-aware scorer; until then the judge decides equivalent forms.
       mustInclude: ["1", "2"],
       requiredTools: ["equationSolver"],
     },
