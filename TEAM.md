@@ -1,8 +1,8 @@
 # METS team ownership
 
-Five people, five agents. Give a coding agent the README in **your** folder. Stay in that folder unless you are changing a shared contract.
+Each team member owns a specialist module. The module READMEs describe responsibilities, implementation and testing. Shared contract changes require coordination across the affected modules.
 
-| Person | Agent | Instructions |
+| Person | Agent | Documentation |
 | --- | --- | --- |
 | Sritam Patnaik | Orchestration (master controller) + app shell | [src/agents/orchestration/README.md](./src/agents/orchestration/README.md) |
 | Gu Haixiang | Math Agent | [src/agents/math/README.md](./src/agents/math/README.md) |
@@ -11,7 +11,7 @@ Five people, five agents. Give a coding agent the README in **your** folder. Sta
 | Muhammad Harun Bin Abdul Rashid | Testing Agent | [src/agents/testing/README.md](./src/agents/testing/README.md) |
 | (unassigned) | Guardrail (hidden) | [src/agents/guardrail/README.md](./src/agents/guardrail/README.md) |
 
-System overview for anyone explaining the project: [docs/HOW-IT-WORKS.md](./docs/HOW-IT-WORKS.md) and [AGENTS.md](./AGENTS.md).
+System overview: [docs/HOW-IT-WORKS.md](./docs/HOW-IT-WORKS.md).
 
 ## Shared contracts (ask before changing)
 
