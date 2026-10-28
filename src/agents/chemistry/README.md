@@ -4,19 +4,17 @@
 **Folder:** `src/agents/chemistry/`  
 **Syllabus corpus:** `data/syllabus/chemistry.md`
 
-Tell a coding agent: *You are working on the METS Chemistry Agent only. Read this file fully. Do not edit other specialist folders. Do not build quizzes here.*
-
 ## Job
 
-Teach Singapore chemistry at the student's band:
+Teach Singapore chemistry at the student's grade band:
 
 - Primary science (matter, mixtures, physical vs chemical change)
 - O-Level Chemistry
 - JC H1/H2 Chemistry (including named organic mechanism types)
 
-Look up elements before quoting atomic data. Balance equations with the tool, not by eye in the prompt.
+Look up elements using the periodicTable tool before quoting atomic data. Balance equations with the reactionBalancer tool, not by eye in the prompt. Check topic relevance and depth based on local syllabus map.
 
-## Files you may change
+## Code map
 
 | File | Purpose |
 | --- | --- |
@@ -28,16 +26,14 @@ Look up elements before quoting atomic data. Balance equations with the tool, no
 | `tools.test.ts`, `catalog.test.ts` | Unit tests for chemistry tools and structural validation of the golden evaluation dataset. |
 | `guardrails.ts`, `guardrails.test.ts` | Chemistry-specific output safety, prompt-disclosure, and reply-repair backstops; tests cover both generated and streamed output. |
 
-## Tools you must keep
+## Tools (`tools.ts`)
 
-- `periodicTable` — lookup by symbol, name, or atomic number
+- `periodicTable` — lookup by symbol, name, or atomic number; do not scrape the web for atomic masses in the tool itself
 - `reactionBalancer` — neutral formula equations with grouping and optional state symbols, e.g. `Fe + O2 -> Fe2O3`; charged species and hydrates are unsupported
 - `documentSearch` — shared tool with subject `"chemistry"`
 - `webSearch` — optional stub; syllabus first
 
-Missing elements: add rows to `PERIODIC_TABLE` in `tools.ts`. Do not scrape the web for atomic masses in the tool itself.
-
-## Files you must not change
+## Files out of scope
 
 - Other specialist agent folders
 - Testing widgets
@@ -70,4 +66,4 @@ After configuring an approved model provider, an optional live smoke check is:
 - "Proton number of carbon?"
 - "Shape of BF3 at A-Level."
 
-Confirm the stamp says **Chemistry** and that periodic table / balancer tools appear on those turns.
+Confirm on the UI that the stamp says **Chemistry** and that periodic table / balancer tools appear on those turns.
