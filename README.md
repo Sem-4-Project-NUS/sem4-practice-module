@@ -31,9 +31,9 @@ Signed-in profiles, conversations, chat memory, pgvector chat chunks, and eval h
 
 ## Team folders
 
-Each person has a dedicated instruction file. Open yours before editing, and point a coding agent at it:
+Each specialist's README describes its role, implementation and testing:
 
-| Person | Agent | Instructions |
+| Person | Agent | Documentation |
 | --- | --- | --- |
 | Sritam Patnaik | Orchestration + UI | [src/agents/orchestration/README.md](./src/agents/orchestration/README.md) |
 | Gu Haixiang | Math | [src/agents/math/README.md](./src/agents/math/README.md) |
@@ -42,7 +42,7 @@ Each person has a dedicated instruction file. Open yours before editing, and poi
 | Muhammad Harun Bin Abdul Rashid | Testing | [src/agents/testing/README.md](./src/agents/testing/README.md) |
 | (unassigned) | Guardrail (hidden) | [src/agents/guardrail/README.md](./src/agents/guardrail/README.md) |
 
-Also see [TEAM.md](./TEAM.md) and [AGENTS.md](./AGENTS.md) (what Cursor/other agents read).
+See [TEAM.md](./TEAM.md) for ownership and shared development conventions.
 
 ## Evals
 

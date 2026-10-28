@@ -1,6 +1,6 @@
 # How METS works
 
-Use this file when a teammate or another coding agent asks what the system is doing. Implementation details for one specialist live in that agent's README under `src/agents/<name>/README.md`.
+This document describes the system architecture and student chat flow. Implementation details for each specialist are documented in `src/agents/<name>/README.md`.
 
 ## Product
 
